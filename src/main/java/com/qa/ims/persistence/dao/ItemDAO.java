@@ -35,10 +35,20 @@ public class ItemDAO implements Dao<Item> {
 
 	@Override
 	public Item read(Long id) {
-		// TODO Auto-generated method stub
+		try (Connection con = DBUtils.getInstance().getConnection();
+				PreparedStatement stmt = con.prepareStatement("SELECT * FROM items WHERE item_id = ?");){
+			stmt.setLong(1, id);
+			ResultSet rs = stmt.executeQuery();
+			rs.next();
+			return new Item(rs.getInt("item_id"), rs.getString("item_name"), rs.getLong("price"));
+		}
+		
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		
 		return null;
 	}
-
 	@Override
 	public Item create(Item t) {
 		try(Connection con = DBUtils.getInstance().getConnection();
