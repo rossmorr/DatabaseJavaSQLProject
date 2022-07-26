@@ -8,11 +8,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.DBUtils;
 
 public class ItemDAO implements Dao<Item> {
-
+	public static final Logger LOGGER = LogManager.getLogger();
 	@Override
 	public List<Item> readAll() {
 		// TODO Auto-generated method stub
@@ -49,7 +52,15 @@ public class ItemDAO implements Dao<Item> {
 
 	@Override
 	public int delete(long id) {
-		// TODO Auto-generated method stub
+		try(Connection con = DBUtils.getInstance().getConnection();
+				PreparedStatement stmt = con.prepareStatement("DELETE FROM items WHERE item_id = ?");){
+				stmt.setLong(1, id);
+				stmt.executeUpdate();
+				
+		}
+		catch(Exception e) {
+			LOGGER.error(e.getMessage());
+		}
 		return 0;
 	}
 
