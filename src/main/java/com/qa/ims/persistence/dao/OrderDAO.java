@@ -1,9 +1,12 @@
 package com.qa.ims.persistence.dao;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,12 +18,77 @@ import com.qa.ims.utils.DBUtils;
 
 public class OrderDAO implements Dao<Order> {
 	public static final Logger LOGGER = LogManager.getLogger();
-
+	
 	@Override
 	public List<Order> readAll() {
-		// TODO Auto-generated method stub
+		ArrayList<Integer> orderIDs = new ArrayList<Integer>();
+		List<Order> orders = new ArrayList<Order>();
+		ArrayList<Integer> completedIDs = new ArrayList<Integer>();
+		Float total = 0f;
+		try {
+			Connection con = DBUtils.getInstance().getConnection();;
+			Statement stmt=con.createStatement();
+			// select all tables joined on their foreign keys (Customer<Order<Orderitem>Item)
+			ResultSet rs = stmt.executeQuery("select * from order_item o "
+					+ "join items i "
+					+ "on o.item_id = i.item_id "
+					+ "join order_record ord "
+					+ "on ord.order_id = o.order_id "
+					+ "join customers c "
+					+ "on c.customer_id = ord.customer_id;");
+			
+			while(rs.next()) {
+			// loop through each result, check if its a new order each time, creating a list of orderIDs and corresponding custIDs
+				if (!orderIDs.contains(rs.getInt("o.order_id"))){
+					orderIDs.add(rs.getInt("o.order_id"));
+					orders.add(new Order(rs.getLong("o.order_ID"), rs.getLong("c.customer_id"), rs.getString("c.first_name")));
+				}
+				
+				//rs.getInt("o.OrderID");
+			}
+			
+			// for each order
+			
+			for (Order order:orders) {
+				rs = stmt.executeQuery("select * from order_item o "
+						+ "join items i "
+						+ "on o.item_id = i.item_id "
+						+ "join order_record ord "
+						+ "on ord.order_id = o.order_id "
+						+ "join customers c "
+						+ "on c.customer_id = ord.customer_id "
+						+ "where ord.order_id = " + order.getOrderID());
+				ArrayList<Item> itemsToAdd = new ArrayList<>();
+				while (rs.next()) {
+					itemsToAdd.add(new Item(rs.getLong("i.item_id"), rs.getString("i.item_name"), rs.getDouble("i.price")));
+				
+				}
+				order.setItems(itemsToAdd);
+			}
+			
+			
+			return orders;
+	}
+	catch(Exception e) {
+		LOGGER.info(e.getMessage());
 		return null;
 	}
+		}
+			
+			// loop through the order creating an arraylist of items
+				
+			// return the order with the arraylist
+			
+			// create a new order item containing orderID, CustomerID, arraylist of items
+			
+			// add this order item to an arraylist of orders
+			
+			// return the arraylist of orders
+			
+			// for every order ID request all the joined tables corresponding to the order
+			
+
+	
 // checks the last order that was created and returns it so that the id can be taken and used to attach an item
 	public Order readLatest(Long id) {
 		try (Connection con = DBUtils.getInstance().getConnection();

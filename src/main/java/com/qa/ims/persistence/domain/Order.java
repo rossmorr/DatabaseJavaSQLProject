@@ -5,12 +5,18 @@ import java.util.ArrayList;
 public class Order {
 	private long orderID;
 	private long customerID;
+	private String customerName;
 	private ArrayList<Item> items;
 	
 	public Order(Long custID) {
 		this.customerID = custID;
 	}
 	public Order(long orderID, long customerID) {
+		this.orderID = orderID;
+		this.customerID = customerID;
+	}
+	public Order(long orderID, long customerID, String name) {
+		this.setCustomerName(name);
 		this.orderID = orderID;
 		this.customerID = customerID;
 	}
@@ -26,11 +32,17 @@ public class Order {
 	public void setCustomerID(long customerID) {
 		this.customerID = customerID;
 	}
-	public ArrayList<Item> getProducts() {
+	public ArrayList<Item> getItems() {
 		return items;
 	}
-	public void setProducts(ArrayList<Item> items) {
+	public void setItems(ArrayList<Item> items) {
 		this.items = items;
+	}
+	public String getCustomerName() {
+		return customerName;
+	}
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 
 }
