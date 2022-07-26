@@ -86,7 +86,31 @@ public class OrderController implements CrudController<Order>{
 
 	@Override
 	public int delete() {
-		// TODO Auto-generated method stub
+		LOGGER.info("Would you like to delete an ITEM or an ORDER?");
+		String response = utils.getString();
+		response = response.toLowerCase();
+		switch(response) {
+		  case "item":
+				
+				LOGGER.info("Which order would you like to delete from?");
+				long orderid = utils.getLong();
+				LOGGER.info("Which item would you like to delete?");
+				long itemid = utils.getLong();
+				
+				orderDAO.productdeleter(orderid, itemid);
+		    break;
+		  case "order":
+		    
+			  LOGGER.info("Which order would you like to delete?");
+			  long orderdelete = utils.getLong();			  
+		      orderDAO.delete(orderdelete);
+			  
+			  
+		    break;
+		  default:
+		    LOGGER.info("Invalid response");
+		}
+
 		return 0;
 	}
 	
