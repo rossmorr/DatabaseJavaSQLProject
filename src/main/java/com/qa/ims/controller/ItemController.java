@@ -32,23 +32,30 @@ public class ItemController implements CrudController<Item> {
 
 	@Override
 	public Item create() {
-		LOGGER.info("Please enter the product name");
+		LOGGER.info("Please enter the item name");
 		String name = utils.getString();
-		LOGGER.info("Please enter the product price");
+		LOGGER.info("Please enter the item price");
 		double price = utils.getDouble();
 		Item item = itemDAO.create(new Item(name, price));
-		LOGGER.info("Product created");
+		LOGGER.info("Item created");
 		return item;
 	}
 	@Override
 	public Item update() {
-		// TODO Auto-generated method stub
-		return null;
+		LOGGER.info("Please enter the id of the item you would like to update");
+		Long id = utils.getLong();
+		LOGGER.info("Please enter a name");
+		String name = utils.getString();
+		LOGGER.info("Please enter a price");
+		double price = utils.getDouble();
+		Item item = itemDAO.update(new Item(id, name, price));
+		LOGGER.info("Item Updated");
+		return item;
 	}
 
 	@Override
 	public int delete() {
-		LOGGER.info("Please enter the ID of the product you would like to delete");
+		LOGGER.info("Please enter the ID of the item you would like to delete");
 		long id = utils.getLong();
 		itemDAO.delete(id);
 		return 0;
