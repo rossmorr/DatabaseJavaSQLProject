@@ -17,6 +17,10 @@ public class Item {
 		this.price = price;
 	}
 
+	public Item(long id) {
+		this.id = id;
+	}
+
 	public long getId() {
 		return id;
 	}

@@ -1,12 +1,15 @@
 package com.qa.ims.controller;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.qa.ims.persistence.dao.OrderDAO;
 import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.persistence.domain.Order;
 import com.qa.ims.utils.Utils;
 
@@ -25,9 +28,27 @@ public class OrderController implements CrudController<Order>{
 
 	@Override
 	public List<Order> readAll() {
-		// TODO Auto-generated method stub
-		return null;
+		//setting the cost format to 2 decimal places
+		Locale locale = Locale.ENGLISH;
+		NumberFormat nf = NumberFormat.getNumberInstance(locale);
+		nf.setMinimumFractionDigits(2);
+		
+		List<Order> orders = orderDAO.readAll();
+		for (Order order: orders) {
+			LOGGER.info("---------Order# [" + order.getOrderID() + "]" + " Customer# [" + order.getCustomerID() + "] [" + order.getCustomerName() +"]---------");
+			for (Item item: order.getItems()) {
+				
+				LOGGER.info(item.getName() + "    £" + nf.format(item.getPrice()));
+			}
+		}
+		
+		
+		return orders;
+		
+		
 	}
+		
+		
 
 	@Override
 	public Order create() {
