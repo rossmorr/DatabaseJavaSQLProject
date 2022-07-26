@@ -11,9 +11,9 @@ CREATE TABLE IF NOT EXISTS `ims`.`customers` (
     PRIMARY KEY (`id`)
 );
 
-CREATE TABLE IF NOT EXISTS products(
-product_id int primary key auto_increment,
-product_name varchar(50) not null,
+CREATE TABLE IF NOT EXISTS items(
+item_id int primary key auto_increment,
+item_name varchar(50) not null,
 price decimal(10,2) not null
 );
 
@@ -26,9 +26,9 @@ foreign key (customer_id) references customers(id)
 create table if not exists order_item(
 id int primary key auto_increment,
 order_id int not null,
-product_id int not null,
+item_id int not null,
 foreign key (order_id) references order_record(order_id),
-foreign key (product_id) references products(product_id)
+foreign key (item_id) references items(item_id)
 );
 
 
