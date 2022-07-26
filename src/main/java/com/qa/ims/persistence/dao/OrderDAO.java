@@ -58,9 +58,32 @@ public class OrderDAO implements Dao<Order> {
 
 	@Override
 	public int delete(long id) {
-		// TODO Auto-generated method stub
+		
+		// deletes all records matching given order ID from the order item table
+		try (Connection con = DBUtils.getInstance().getConnection();
+				PreparedStatement stmt = con.prepareStatement("DELETE FROM order_item WHERE order_id = ?");){
+					stmt.setLong(1, id);
+					stmt.execute();
+				}
+				
+		catch(Exception e) {
+			LOGGER.info(e.getMessage());
+			
+		}
+		
+		//deletes all records matching given order ID from the order record
+		try (Connection con = DBUtils.getInstance().getConnection();
+				PreparedStatement stmt = con.prepareStatement("DELETE FROM order_record WHERE order_id = ?");){
+					stmt.setLong(1, id);
+					stmt.executeUpdate();
+				}
+			
+		catch(Exception e) {
+			LOGGER.info(e.getMessage());
+		}
+		
 		return 0;
-	}
+		}
 
 	@Override
 	public Order modelFromResultSet(ResultSet resultSet) throws SQLException {
@@ -79,6 +102,24 @@ public class OrderDAO implements Dao<Order> {
 			LOGGER.warn(e.getMessage());
 		}
 	}
+	
+	public int productdeleter(long orderid, long itemid) {
+		try (Connection con = DBUtils.getInstance().getConnection();
+				//deletes from the order but only deletes one item as opposed to all matching items
+				PreparedStatement stmt = con.prepareStatement("DELETE FROM order_item WHERE item_id = ? AND order_id = ? ORDER BY order_id DESC LIMIT 1");
+				){
+			stmt.setLong(1, itemid);
+			stmt.setLong(2, orderid);
+			stmt.execute();
+		}
+		catch(Exception e) {
+			
+		}
+		return 0;
+	}
+	
+	
+	
 	@Override
 	public Order read(Long id) {
 		// TODO Auto-generated method stub
