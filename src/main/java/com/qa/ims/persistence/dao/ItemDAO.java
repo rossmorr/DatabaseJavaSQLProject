@@ -11,15 +11,26 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.DBUtils;
 
 public class ItemDAO implements Dao<Item> {
 	public static final Logger LOGGER = LogManager.getLogger();
-	@Override
 	public List<Item> readAll() {
-		// TODO Auto-generated method stub
-		return null;
+		try (Connection connection = DBUtils.getInstance().getConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery("SELECT * FROM items");) {
+			List<Item> items = new ArrayList<>();
+			while (resultSet.next()) {
+				items.add(modelFromResultSet(resultSet));
+			}
+			return items;
+		} catch (SQLException e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -75,8 +86,10 @@ public class ItemDAO implements Dao<Item> {
 
 	@Override
 	public Item modelFromResultSet(ResultSet resultSet) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		Long id = resultSet.getLong("item_id");
+		String name = resultSet.getString("item_name");
+		Long price = resultSet.getLong("price");
+		return new Item(id, name, price);
 	}
 	
 	

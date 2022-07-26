@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 
 import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.Utils;
 
@@ -26,8 +27,11 @@ public class ItemController implements CrudController<Item> {
 
 	@Override
 	public List<Item> readAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Item> items = itemDAO.readAll();
+		for (Item item: items) {
+			LOGGER.info(item);
+		}
+		return items;
 	}
 
 	@Override
