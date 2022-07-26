@@ -28,24 +28,47 @@ public class OrderController implements CrudController<Order>{
 
 	@Override
 	public List<Order> readAll() {
+		LOGGER.info("Would you like to view the 'ORDERS', or calculate the 'COST' of an order?");
+		String resp =utils.getString().toLowerCase();
+		List<Order> orders = orderDAO.readAll();
 		//setting the cost format to 2 decimal places
 		Locale locale = Locale.ENGLISH;
 		NumberFormat nf = NumberFormat.getNumberInstance(locale);
 		nf.setMinimumFractionDigits(2);
 		
-		List<Order> orders = orderDAO.readAll();
-		for (Order order: orders) {
-			LOGGER.info("---------Order# [" + order.getOrderID() + "]" + " Customer# [" + order.getCustomerID() + "] [" + order.getCustomerName() +"]---------");
-			for (Item item: order.getItems()) {
-				
-				LOGGER.info(item.getName() + "    £" + nf.format(item.getPrice()));
+		switch(resp) {
+		case("orders"):
+		
+		
+
+			for (Order order: orders) {
+				LOGGER.info("---------Order# [" + order.getOrderID() + "]" + " Customer# [" + order.getCustomerID() + "] [" + order.getCustomerName() +"]---------");
+				for (Item item: order.getItems()) {
+					LOGGER.info(item.getName() + "    £" + nf.format(item.getPrice()));
+				}
 			}
-		}
+			return orders;
 		
+		case("cost"):
+			LOGGER.info("Which order would you like the total cost of?");
+			Long orderToCost = utils.getLong();
+			double total = 0;
+			// goes through each order item checking if the orderID matches user input, then if it does it outputs products and total price
+			for (Order order: orders) {
+				if (order.getOrderID() == orderToCost) {
+					LOGGER.info("---------Order# [" + order.getOrderID() + "]" + " Customer# [" + order.getCustomerID() + "] [" + order.getCustomerName() +"]---------");
+					for (Item item: order.getItems()) {
+						LOGGER.info(item.getName() + "    £" + nf.format(item.getPrice()));
+						total += item.getPrice();
+					}
+					LOGGER.info("Total Price:      £" + nf.format(total));
+				}
+			}
+			return orders;
+			
 		
+	}
 		return orders;
-		
-		
 	}
 		
 		
