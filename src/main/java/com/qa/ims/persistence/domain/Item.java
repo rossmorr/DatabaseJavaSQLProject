@@ -46,4 +46,9 @@ public class Item {
 		return result;
 	}
 
+	
+	@Override
+	public String toString() {
+		return "id: " + id + " name: " + name + " Price: " + price;
+	}
 }
