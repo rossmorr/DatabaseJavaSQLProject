@@ -16,7 +16,10 @@ import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.DBUtils;
 
 public class ItemDAO implements Dao<Item> {
+	
 	public static final Logger LOGGER = LogManager.getLogger();
+	
+	
 	public List<Item> readAll() {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
@@ -40,7 +43,7 @@ public class ItemDAO implements Dao<Item> {
 			stmt.setLong(1, id);
 			ResultSet rs = stmt.executeQuery();
 			rs.next();
-			return new Item(rs.getInt("item_id"), rs.getString("item_name"), rs.getLong("price"));
+			return new Item(rs.getInt("item_id"), rs.getString("item_name"), rs.getDouble("price"));
 		}
 		
 		catch(Exception e) {
@@ -52,15 +55,15 @@ public class ItemDAO implements Dao<Item> {
 	@Override
 	public Item create(Item t) {
 		try(Connection con = DBUtils.getInstance().getConnection();
-				PreparedStatement stmt = con.prepareStatement("INSERT INTO Items VALUES (0, ?, ?)");
+				PreparedStatement stmt = con.prepareStatement("INSERT INTO Items(item_name, price) VALUES (?, ?)");
 				){
 			stmt.setString(1, t.getName());
 			stmt.setDouble(2, t.getPrice());
 			stmt.execute();
-			
+			return t;
 		}
 		catch(Exception e) {
-			System.out.println(e);
+			System.out.println(e + "ITS THIS ONE");
 		}
 		return null;
 	}
@@ -73,9 +76,9 @@ public class ItemDAO implements Dao<Item> {
 			stmt.setDouble(2, t.getPrice());
 			stmt.setLong(3, t.getId());
 			stmt.executeUpdate();
+			return read(t.getId());
 		}
 		catch(Exception e) {
-			
 		}
 		return null;
 	}
@@ -85,7 +88,7 @@ public class ItemDAO implements Dao<Item> {
 		try(Connection con = DBUtils.getInstance().getConnection();
 				PreparedStatement stmt = con.prepareStatement("DELETE FROM items WHERE item_id = ?");){
 				stmt.setLong(1, id);
-				stmt.executeUpdate();
+				return stmt.executeUpdate();
 				
 		}
 		catch(Exception e) {
@@ -98,7 +101,7 @@ public class ItemDAO implements Dao<Item> {
 	public Item modelFromResultSet(ResultSet resultSet) throws SQLException {
 		Long id = resultSet.getLong("item_id");
 		String name = resultSet.getString("item_name");
-		Long price = resultSet.getLong("price");
+		Double price = resultSet.getDouble("price");
 		return new Item(id, name, price);
 	}
 	

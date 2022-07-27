@@ -52,16 +52,14 @@ public class OrderController implements CrudController<Order>{
 		case("cost"):
 			LOGGER.info("Which order would you like the total cost of?");
 			Long orderToCost = utils.getLong();
-			double total = 0;
 			// goes through each order item checking if the orderID matches user input, then if it does it outputs products and total price
 			for (Order order: orders) {
 				if (order.getOrderID() == orderToCost) {
 					LOGGER.info("---------Order# [" + order.getOrderID() + "]" + " Customer# [" + order.getCustomerID() + "] [" + order.getCustomerName() +"]---------");
 					for (Item item: order.getItems()) {
 						LOGGER.info(item.getName() + "    £" + nf.format(item.getPrice()));
-						total += item.getPrice();
 					}
-					LOGGER.info("Total Price:      £" + nf.format(total));
+					LOGGER.info("Total Price:      £" + nf.format(orderDAO.calculate(orderToCost)));
 				}
 			}
 			return orders;
@@ -124,7 +122,6 @@ public class OrderController implements CrudController<Order>{
 
 	@Override
 	public Order update() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
