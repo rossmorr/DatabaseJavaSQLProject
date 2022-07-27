@@ -29,19 +29,19 @@ public class OrderDAO implements Dao<Order> {
 			Connection con = DBUtils.getInstance().getConnection();;
 			Statement stmt=con.createStatement();
 			// select all tables joined on their foreign keys (Customer<Order<Orderitem>Item)
-			ResultSet rs = stmt.executeQuery("select * from order_item o "
-					+ "join items i "
-					+ "on o.item_id = i.item_id "
-					+ "join order_record ord "
-					+ "on ord.order_id = o.order_id "
-					+ "join customers c "
-					+ "on c.customer_id = ord.customer_id;");
-			
+			ResultSet rs = stmt.executeQuery("select * from order_item "
+					+ "join items "
+					+ "on order_item.item_id = items.item_id "
+					+ "join order_record "
+					+ "on order_record.order_id = order_item.order_id "
+					+ "join customers "
+					+ "on customers.customer_id = order_record.customer_id");
 			while(rs.next()) {
 			// loop through each result, check if its a new order each time, creating a list of orderIDs and corresponding custIDs
-				if (!orderIDs.contains(rs.getInt("o.order_id"))){
-					orderIDs.add(rs.getInt("o.order_id"));
-					orders.add(new Order(rs.getLong("o.order_ID"), rs.getLong("c.customer_id"), rs.getString("c.first_name")));
+
+				if (!orderIDs.contains(rs.getInt("order_item.order_id"))){
+					orderIDs.add(rs.getInt("order_item.order_id"));
+					orders.add(new Order(rs.getLong("order_item.order_ID"), rs.getLong("customers.customer_id"), rs.getString("customers.first_name")));
 				}
 				
 				//rs.getInt("o.OrderID");
@@ -50,23 +50,21 @@ public class OrderDAO implements Dao<Order> {
 			// for each order
 			
 			for (Order order:orders) {
-				rs = stmt.executeQuery("select * from order_item o "
-						+ "join items i "
-						+ "on o.item_id = i.item_id "
-						+ "join order_record ord "
-						+ "on ord.order_id = o.order_id "
-						+ "join customers c "
-						+ "on c.customer_id = ord.customer_id "
-						+ "where ord.order_id = " + order.getOrderID());
+				rs = stmt.executeQuery("select * from order_item "
+						+ "join items "
+						+ "on order_item.item_id = items.item_id "
+						+ "join order_record "
+						+ "on order_record.order_id = order_item.order_id "
+						+ "join customers "
+						+ "on customers.customer_id = order_record.customer_id "
+						+ "where order_record.order_id = " + order.getOrderID());
 				ArrayList<Item> itemsToAdd = new ArrayList<>();
 				while (rs.next()) {
-					itemsToAdd.add(new Item(rs.getLong("i.item_id"), rs.getString("i.item_name"), rs.getDouble("i.price")));
+					itemsToAdd.add(new Item(rs.getLong("items.item_id"), rs.getString("items.item_name"), rs.getDouble("items.price")));
 				
 				}
 				order.setItems(itemsToAdd);
 			}
-			
-			
 			return orders;
 	}
 	catch(Exception e) {
@@ -111,6 +109,7 @@ public class OrderDAO implements Dao<Order> {
 				PreparedStatement stmt = con.prepareStatement("INSERT INTO order_record VALUES (0, ?)");){
 			stmt.setLong(1, order.getCustomerID());
 			stmt.execute();
+			return order;
 		}
 		catch(Exception e) {
 			LOGGER.info("Customer ID does not exist");
@@ -126,16 +125,19 @@ public class OrderDAO implements Dao<Order> {
 
 	@Override
 	public int delete(long id) {
+		int result1;
+		int result2;
 		
 		// deletes all records matching given order ID from the order item table
 		try (Connection con = DBUtils.getInstance().getConnection();
 				PreparedStatement stmt = con.prepareStatement("DELETE FROM order_item WHERE order_id = ?");){
 					stmt.setLong(1, id);
-					stmt.execute();
+					result1 = stmt.executeUpdate();
 				}
 				
 		catch(Exception e) {
 			LOGGER.info(e.getMessage());
+			result1 = 0;
 			
 		}
 		
@@ -143,12 +145,18 @@ public class OrderDAO implements Dao<Order> {
 		try (Connection con = DBUtils.getInstance().getConnection();
 				PreparedStatement stmt = con.prepareStatement("DELETE FROM order_record WHERE order_id = ?");){
 					stmt.setLong(1, id);
-					stmt.executeUpdate();
+					result2 = stmt.executeUpdate();
 				}
 			
 		catch(Exception e) {
 			LOGGER.info(e.getMessage());
+			result2 = 0;
 		}
+		
+		if (result1 + result2 == 2) {
+			return 1;
+		}
+		
 		
 		return 0;
 		}
@@ -159,29 +167,30 @@ public class OrderDAO implements Dao<Order> {
 		return null;
 	}
 
-	public void productAdder(long orderid,long itemid) {
+	public int productAdder(long orderid,long itemid) {
 		try (Connection con = DBUtils.getInstance().getConnection();
 				PreparedStatement stmt = con.prepareStatement("INSERT INTO order_item VALUES (0, ?, ?)")){
 			stmt.setLong(1, orderid);
 			stmt.setLong(2, itemid);
-			stmt.executeUpdate();
+			return stmt.executeUpdate();
 		}
 		catch(Exception e) {
 			LOGGER.warn(e.getMessage());
+			return 0;
 		}
 	}
 	
 	public int productdeleter(long orderid, long itemid) {
 		try (Connection con = DBUtils.getInstance().getConnection();
 				//deletes from the order but only deletes one item as opposed to all matching items
-				PreparedStatement stmt = con.prepareStatement("DELETE FROM order_item WHERE item_id = ? AND order_id = ? ORDER BY order_id DESC LIMIT 1");
+				PreparedStatement stmt = con.prepareStatement("DELETE FROM order_item WHERE item_id = ? AND order_id = ? LIMIT 1");
 				){
 			stmt.setLong(1, itemid);
 			stmt.setLong(2, orderid);
-			stmt.execute();
+			return stmt.executeUpdate();
 		}
 		catch(Exception e) {
-			
+			LOGGER.info(e);
 		}
 		return 0;
 	}
@@ -190,9 +199,30 @@ public class OrderDAO implements Dao<Order> {
 	
 	@Override
 	public Order read(Long id) {
-		// TODO Auto-generated method stub
+		
+		List<Order> orders = readAll();
+		
+		for (Order order: orders) {
+			if (order.getOrderID()== id) {
+				return order;
+			}
+		}
+		
 		return null;
 	}
 	
+	public Double calculate(Long toCalculate) {
+		Double total = 0D;
+		List<Order> orders = readAll();
+		for (Order order: orders) {
+			if (order.getOrderID() == toCalculate){
+				for (Item item: order.getItems()) {
+					total += item.getPrice();
+				}
+			}
+		}
+		return total;
+		
+	}
 	
 }
