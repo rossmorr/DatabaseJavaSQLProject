@@ -15,7 +15,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 MySQL workbench (or alternative)
-- an SQL database is required in order to use the software. MySQL was the software of choice during development and therefore it is recommended. Full details of how to install can be
+an SQL database is required in order to use the software. MySQL was the software of choice during development and therefore it is recommended. Full details of how to install can be
 found here https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-installing. Make sure that port is set to 3306, username is "root" and password is "pass"
 or you will not be able to connect to the database.
 
@@ -27,8 +27,6 @@ The integrated development environment of choice for this project was Eclipse. I
 -Download the eclipse installer from this website - http://www.eclipse.org/downloads
 -Run the installer and when selecting a package, choose "Eclipse IDE For Java Developers"
 -Choose a directory and hit install
-
-Next 
 
 You can either run the code through eclipse or by directly running the jar file included.
 if you navigate to open project in the toolbar you can navigate to and open the folder for this project, at which point you can view and edit the source code or run the prebuild software.
