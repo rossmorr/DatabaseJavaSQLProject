@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -59,7 +60,7 @@ public class DBUtils {
 				try (Statement statement = connection.createStatement();) {
 					return statement.executeUpdate(string);
 				} catch (Exception e) {
-					LOGGER.debug(e);
+					LOGGER.info(e.getMessage());
 					return 0;
 				}
 			}).reduce((acc, next) -> acc + next).orElse(0);
