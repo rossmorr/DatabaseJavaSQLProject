@@ -23,8 +23,6 @@ public class OrderDAO implements Dao<Order> {
 	public List<Order> readAll() {
 		ArrayList<Integer> orderIDs = new ArrayList<Integer>();
 		List<Order> orders = new ArrayList<Order>();
-		ArrayList<Integer> completedIDs = new ArrayList<Integer>();
-		Float total = 0f;
 		try {
 			Connection con = DBUtils.getInstance().getConnection();;
 			Statement stmt=con.createStatement();
@@ -118,7 +116,7 @@ public class OrderDAO implements Dao<Order> {
 	}
 
 	@Override
-	public Order update(Order t) {
+	public Order update(Order order) {
 		// TODO Auto-generated method stub
 		return null;
 	}

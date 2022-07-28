@@ -47,6 +47,15 @@ public class OrderDAOTest {
 		order.setItems(expectedItems);
 		assertEquals(order, DAO.read(1L));
 	}
+	
+	@Test
+	public void testReadLatest() {
+		Long toRead = 1L;
+		Order order = new Order(1L,1L);
+		assertEquals(order, DAO.readLatest(toRead));
+		
+		
+	}
 
 
 	@Test
