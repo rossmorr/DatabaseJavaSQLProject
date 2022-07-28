@@ -96,6 +96,7 @@ public class OrderController implements CrudController<Order>{
 					long orderID = orderDAO.readLatest(custID).getOrderID();
 					//adds an item to that order
 					orderDAO.productAdder(orderID, itemID);
+					return passin;
 				}
 				else {
 					LOGGER.info("The item ID does not exist");
@@ -137,22 +138,20 @@ public class OrderController implements CrudController<Order>{
 				long orderid = utils.getLong();
 				LOGGER.info("Which item would you like to delete?");
 				long itemid = utils.getLong();
-				
 				orderDAO.productdeleter(orderid, itemid);
-		    break;
-		  case "order":
+				return 1;
+				
+		case "order":
 		    
 			  LOGGER.info("Which order would you like to delete?");
 			  long orderdelete = utils.getLong();			  
 		      orderDAO.delete(orderdelete);
+			  return 1;
 			  
-			  
-		    break;
-		  default:
+		default:
 		    LOGGER.info("Invalid response");
+		    return 0;
 		}
-
-		return 0;
 	}
 	
 }
