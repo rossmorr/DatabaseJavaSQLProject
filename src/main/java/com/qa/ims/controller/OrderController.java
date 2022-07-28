@@ -57,7 +57,7 @@ public class OrderController implements CrudController<Order>{
 				if (order.getOrderID() == orderToCost) {
 					LOGGER.info("---------Order# [" + order.getOrderID() + "]" + " Customer# [" + order.getCustomerID() + "] [" + order.getCustomerName() +"]---------");
 					for (Item item: order.getItems()) {
-						LOGGER.info(item.getName() + "    £" + nf.format(item.getPrice()));
+						LOGGER.info(item.getName() + "    " + nf.format(item.getPrice()));
 					}
 					LOGGER.info("Total Price:      " + nf.format(orderDAO.calculate(orderToCost)));
 				}
