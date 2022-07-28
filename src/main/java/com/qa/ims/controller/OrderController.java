@@ -44,7 +44,7 @@ public class OrderController implements CrudController<Order>{
 			for (Order order: orders) {
 				LOGGER.info("---------Order# [" + order.getOrderID() + "]" + " Customer# [" + order.getCustomerID() + "] [" + order.getCustomerName() +"]---------");
 				for (Item item: order.getItems()) {
-					LOGGER.info(item.getName() + "    £" + nf.format(item.getPrice()));
+					LOGGER.info(item.getName() + "    " + nf.format(item.getPrice()));
 				}
 			}
 			return orders;
@@ -59,7 +59,7 @@ public class OrderController implements CrudController<Order>{
 					for (Item item: order.getItems()) {
 						LOGGER.info(item.getName() + "    £" + nf.format(item.getPrice()));
 					}
-					LOGGER.info("Total Price:      £" + nf.format(orderDAO.calculate(orderToCost)));
+					LOGGER.info("Total Price:      " + nf.format(orderDAO.calculate(orderToCost)));
 				}
 			}
 			return orders;
